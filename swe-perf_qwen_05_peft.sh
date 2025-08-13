@@ -13,7 +13,7 @@ set -x
 # # Shift the arguments so $@ refers to the rest
 # shift 2
 
-torchrun --standalone --nnodes=1 --nproc_per_node=8 \
+torchrun --standalone --nnodes=1 --nproc_per_node=2 \
      -m verl.trainer.fsdp_sft_trainer \
     data.train_files=data/sweperf_training_0812 \
     data.val_files=data/sweperf_testing_0812 \
