@@ -26,6 +26,7 @@ os.environ["TOKENIZERS_PARALLELISM"] = "true"
 import logging
 import re
 from contextlib import nullcontext
+from datasets import load_from_disk
 
 import hydra
 import torch
@@ -172,7 +173,7 @@ class FSDPSFTTrainer:
         device_name = get_device_name()
 
         self.train_sampler = DistributedSampler(
-            self.train_dataset, shuffle=True, num_replicas=world_size, rank=rank, drop_last=True
+            self.train_dataset, shuffle=True, num_replicas=world_size, rank=rank, drop_last=False
         )
         self.train_dataloader = StatefulDataLoader(
             dataset=self.train_dataset,
@@ -180,7 +181,7 @@ class FSDPSFTTrainer:
             sampler=self.train_sampler,
             num_workers=8,
             pin_memory=True,
-            drop_last=True,
+            drop_last=False,
             pin_memory_device=device_name,
         )
 
@@ -823,6 +824,9 @@ def create_sft_dataset(data_paths, data_config, tokenizer):
         dataset_cls = SFTDataset
 
     # Create datasets based on the selected class
+    # dataset = load_from_disk(data_paths)
+    # parquet_path = os.path.join(data_paths,"data.parquet")
+    # dataset.to_parquet(parquet_path)
     dataset = dataset_cls(parquet_files=data_paths, tokenizer=tokenizer, config=data_config)
     return dataset
 

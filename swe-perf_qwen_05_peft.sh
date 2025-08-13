@@ -15,14 +15,17 @@ set -x
 
 torchrun --standalone --nnodes=1 --nproc_per_node=2 \
      -m verl.trainer.fsdp_sft_trainer \
-    data.train_files=data/sweperf_training_0812 \
-    data.val_files=data/sweperf_testing_0812 \
+    data.train_files=data/sweperf_training_0812/data.parquet \
+    data.val_files=data/sweperf_testing_0812/data.parquet \
     data.prompt_key='text' \
     data.response_key='code' \
     optim.lr=1e-4 \
-    data.prompt_dict_keys=['text'] \
-    +data.response_dict_keys=['code'] \
-    data.micro_batch_size_per_gpu=4 \
+    data.prompt_dict_keys=[] \
+    +data.response_dict_keys=[] \
+    data.micro_batch_size_per_gpu=1 \
+    data.train_batch_size=2 \
+    data.max_length=16000 \
+    data.truncation=left \
     model.partial_pretrain=Qwen/Qwen2.5-0.5B-Instruct \
     trainer.default_local_dir=save \
     trainer.project_name=gsm8k-sft \
